@@ -30,13 +30,14 @@ SECRET_KEY = 'django-insecure-s!u^ef-a_(!iafir-%h1u0o4b&-=@-%38+7d50iu3xh4qr040i
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
+ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME'), 'localhost', '127.0.0.1']
+
 
 
 
 # Application definition
 
-SITE_ID = 2 # Permite que Django pueda identificar el sitio web
+SITE_ID = 3 # Permite que Django pueda identificar el sitio web
 
 
 INSTALLED_APPS = [
@@ -118,6 +119,8 @@ DATABASES = {
         'PORT': os.getenv('DATABASE_PORT'),
     }
 }
+
+
 
 
 # Password validation
