@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Django google Sing in</title>
+</head>
+<body>
+
+    {% load socialaccount %}
+    <h2>Google Login</h2>
+    <!--redirijimos al perfil -->
+
+    <a href="{% provider_login_url 'google'%}?next=/profile">Login With Google</a>
+
+    {% if user.is_authenticated%}
+
+    <h2>Perfil del usuario</h2>
+    <p>Nombre: {{user.first_name}}</p>
+    <p>Apellido: {{user.last_name}}</p>
+    <p>Email: {{user.email}}</p>
+    <img src="{{user.socialaccount_set.all.0.get_avatar_url}}">
+
+    <a href="logout">Logout</a>
+    {% endif %}
+
+</body>
+</html>
