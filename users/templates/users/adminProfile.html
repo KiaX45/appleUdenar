@@ -1,0 +1,12 @@
+
+
+{% if user.is_authenticated%}
+<h1>usted esta autenticado</h1>
+
+
+{% if user.is_staff  %}
+<h1>Y es administrador</h1>
+{% endif %}
+
+
+{% endif %}

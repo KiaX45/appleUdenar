@@ -1,0 +1,15 @@
+<!-- nav.html -->
+<nav>
+    <ul>
+        <li><a href="{% url 'home' %}">Home</a></li>
+        
+        {% if user.is_authenticated%}
+        <!--Ahora comprobamos is el usuario es un administrador-->
+        {% if user.is_staff %}
+        <li><a href="{% url 'admin:index' %}">Admin</a></li>
+        {% endif %}
+        <li><a href="{% url 'profile' %}">Profile</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+    </ul>
+</nav>

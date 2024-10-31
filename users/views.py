@@ -5,6 +5,9 @@ from django.contrib.auth import logout
 def home(request):
     return render(request, "users/home.html")
 
+def adminprofile(request):
+    return render(request, "users/adminprofile.html")
+
 
 def logout_view(request):
     logout(request) #remueve la sesión del usuario

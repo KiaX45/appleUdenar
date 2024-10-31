@@ -54,7 +54,12 @@ INSTALLED_APPS = [
     'allauth.socialaccount', # Se agrega la app de allauth.socialaccount
     'allauth.socialaccount.providers.google', # Se agrega la app de allauth.socialaccount.providers.google
     'allauth.socialaccount.providers.github', # Se agrega la app de allauth.socialaccount.providers.github
+    'cloudinary',
+    'cloudinary_storage',
+    'products',
+
 ]
+
 
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -181,3 +186,12 @@ LOGOUT_REDIRECT_URL = '/' # Redirige al usuario a la página principal una vez q
 SOCIALACCOUNT_LOGIN_ON_GET = True # Permite que el usuario pueda loguearse con una cuenta social al ingresar a la página principal
 
 
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'), # Se obtiene el nombre de la nube de Cloudinary
+    'API_KEY': os.getenv('CLOUDINARY_API_KEY'), # Se obtiene la clave de la API de Cloudinary
+    'API_SECRET': os.getenv('CLOUDINARY_API_SECRET'), # Se obtiene la clave secreta de la API de Cloudinary
+}
+
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage' # Se define el almacenamiento de archivos en Cloudinary
