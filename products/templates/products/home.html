@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<!--inluimos el navar-->
+{% include 'users/nav.html' %}
+
+
+    <h1>Productos</h1>
+
+{% for product in products  %}
+
+<h3>{{product.name}}</h3>
+
+<p>{{product.description}}</p>
+<img src="{{ product.image.url }}" alt="{{ product.name }}" width="300" height="500" >
+
+{% if user.is_staff %}
+<button>Editar</button>
+<button>Eliminar</button>
+{% endif %}
+
+
+{% endfor %}
+    
+</body>
+</html>
+
+
+
+
+

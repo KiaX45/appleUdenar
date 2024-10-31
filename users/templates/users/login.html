@@ -11,7 +11,7 @@
     <h2>Google Login</h2>
     <!--redirijimos al perfil -->
 
-    <a href="{% provider_login_url 'google'%}?next=/profile">Login With Google</a>
+    <a href="{% provider_login_url 'google'%}?next=/redirect_after_login">Login With Google</a>
 
     {% if user.is_authenticated%}
 

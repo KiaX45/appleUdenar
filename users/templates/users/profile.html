@@ -16,7 +16,7 @@
     <p>Email: {{user.email}}</p>
     <img src="{{user.socialaccount_set.all.0.get_avatar_url}}">
 
-    <a href="logout">Logout</a>
+    <li><a href="{% url 'logout' %}">Logout</a></li>
     {% endif %}
     
 </body>
