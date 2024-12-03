@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrito</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/107/107831.png" type="image/png">
+</head>
+
+<body>
+  {% include 'users/nav.html' %}
+  <div class="nav" style="margin-bottom: 100px;"></div>
+  <!-- Comprobamos primeramente si tiene productos que mostrar -->
+  {% if found_products %}
+  <div class="products-gridtest">
+    {% for product in products %}
+    <div class="card" style=" background-color: rgba(22, 22, 23, 0.8);">
+      <img src="{{ product.image }}" class="card-img-top" width="700rem" alt="..." />
+      <div class="card-body">
+        <h5 class="gradient1">{{ product.name }}</h5>
+        <p style="color: white;">Descripción: {{ product.description }}</p>
+        <p style="color: white;">Cantidad: {{ product.quantity }}</p>
+
+        <div class="btn-container">
+          <button class="editBtn"
+            onclick="llenarDatosEdicion({{ product.id }}, {{ product.quantity }}, {{ product.stock }})" type="button"
+            data-bs-toggle="modal" data-bs-target="#editModal">
+            <svg height="1em" viewBox="0 0 512 512">
+              <path
+                d="M410.3 231l11.3-11.3-33.9-33.9-62.1-62.1L291.7 89.8l-11.3 11.3-22.6 22.6L58.6 322.9c-10.4 10.4-18 23.3-22.2 37.4L1 480.7c-2.5 8.4-.2 17.5 6.1 23.7s15.3 8.5 23.7 6.1l120.3-35.4c14.1-4.2 27-11.8 37.4-22.2L387.7 253.7 410.3 231zM160 399.4l-9.1 22.7c-4 3.1-8.5 5.4-13.3 6.9L59.4 452l23-78.1c1.4-4.9 3.8-9.4 6.9-13.3l22.7-9.1v32c0 8.8 7.2 16 16 16h32zM362.7 18.7L348.3 33.2 325.7 55.8 314.3 67.1l33.9 33.9 62.1 62.1 33.9 33.9 11.3-11.3 22.6-22.6 14.5-14.5c25-25 25-65.5 0-90.5L453.3 18.7c-25-25-65.5-25-90.5 0zm-47.4 168l-144 144c-6.2 6.2-16.4 6.2-22.6 0s-6.2-16.4 0-22.6l144-144c6.2-6.2 16.4-6.2 22.6 0s6.2 16.4 0 22.6z">
+              </path>
+            </svg>
+          </button>
+
+          <!-- Boton para eliminar el cart item deseado -->
+          <button class="button" onclick="selectCartItem({{ product.id }})" data-bs-toggle="modal"
+            data-bs-target="#deleteModal">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 69 14" class="svgIcon bin-top">
+              <g clip-path="url(#clip0_35_24)">
+                <path fill="black"
+                  d="M20.8232 2.62734L19.9948 4.21304C19.8224 4.54309 19.4808 4.75 19.1085 4.75H4.92857C2.20246 4.75 0 6.87266 0 9.5C0 12.1273 2.20246 14.25 4.92857 14.25H64.0714C66.7975 14.25 69 12.1273 69 9.5C69 6.87266 66.7975 4.75 64.0714 4.75H49.8915C49.5192 4.75 49.1776 4.54309 49.0052 4.21305L48.1768 2.62734C47.3451 1.00938 45.6355 0 43.7719 0H25.2281C23.3645 0 21.6549 1.00938 20.8232 2.62734ZM64.0023 20.0648C64.0397 19.4882 63.5822 19 63.0044 19H5.99556C5.4178 19 4.96025 19.4882 4.99766 20.0648L8.19375 69.3203C8.44018 73.0758 11.6746 76 15.5712 76H53.4288C57.3254 76 60.5598 73.0758 60.8062 69.3203L64.0023 20.0648Z">
+                </path>
+              </g>
+              <defs>
+                <clipPath id="clip0_35_24">
+                  <rect fill="white" height="14" width="69"></rect>
+                </clipPath>
+              </defs>
+            </svg>
+
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 69 57" class="svgIcon bin-bottom">
+              <g clip-path="url(#clip0_35_22)">
+                <path fill="black"
+                  d="M20.8232 -16.3727L19.9948 -14.787C19.8224 -14.4569 19.4808 -14.25 19.1085 -14.25H4.92857C2.20246 -14.25 0 -12.1273 0 -9.5C0 -6.8727 2.20246 -4.75 4.92857 -4.75H64.0714C66.7975 -4.75 69 -6.8727 69 -9.5C69 -12.1273 66.7975 -14.25 64.0714 -14.25H49.8915C49.5192 -14.25 49.1776 -14.4569 49.0052 -14.787L48.1768 -16.3727C47.3451 -17.9906 45.6355 -19 43.7719 -19H25.2281C23.3645 -19 21.6549 -17.9906 20.8232 -16.3727ZM64.0023 1.0648C64.0397 0.4882 63.5822 0 63.0044 0H5.99556C5.4178 0 4.96025 0.4882 4.99766 1.0648L8.19375 50.3203C8.44018 54.0758 11.6746 57 15.5712 57H53.4288C57.3254 57 60.5598 54.0758 60.8062 50.3203L64.0023 1.0648Z">
+                </path>
+              </g>
+              <defs>
+                <clipPath id="clip0_35_22">
+                  <rect fill="white" height="57" width="69"></rect>
+                </clipPath>
+              </defs>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Boton para comprar -->
+  <div class="buy-btn-container">
+    <button class="buy-btn" aria-label="Comprar ahora" onclick="FinalizarCompra()">
+      <span class="buy-btn-icon buy-btn-icon-cart" aria-hidden="true"></span>
+      Comprar ahora
+    </button>
+  </div>
+
+  <h3>Proceder al Pago</h3>
+  <form method="post" action="https://www.sandbox.paypal.com/cgi-bin/webscr">
+      {{ paypal_form.render }}
+      <button type="submit" class="btn btn-primary">Pagar con PayPal</button>
+  </form>
+
+  {% else %}
+
+  <!-- Si no hay productos en el carrito -->
+  <main class="cart-containerN">
+    <svg class="cart-iconN" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M4.5 5H21L19 12H6.5M19 14H6.5L4.5 5H2M9 18C9 18.5523 8.55228 19 8 19C7.44772 19 7 18.5523 7 18C7 17.4477 7.44772 17 8 17C8.55228 17 9 17.4477 9 18ZM18 18C18 18.5523 17.5523 19 17 19C16.4477 19 16 18.5523 16 18C16 17.4477 16.4477 17 17 17C17.5523 17 18 17.4477 18 18Z"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    </svg>
+    <h1 class="cart-titleN">Tu carrito está vacío</h1>
+    <p class="cart-messageN">Agrega nuevos articulos al carrito para seguir viendolos. O continúa comprando en la Tienda
+      Apple.</p>
+    <a href="{% url 'products:home' %}" class="cart-buttonN">Ir a la tienda</a>
+  </main>
+
+  <footer>
+    Copyright © 2024 Udenar. Todos los derechos reservados.
+  </footer>
+  {% endif %}
+
+  <!-- Modal de carga -->
+  <div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true" style="z-index: 1051;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-transparent border-0">
+        <div class="modal-body text-center">
+          <div class="loader">
+            <div></div>
+          </div>
+          <h5 class="text-light mt-4" id="loadingMessage">Procesando...</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de confirmación de eliminación -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">¿Seguro que desea eliminar este producto?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="deleteForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2>Esta accion es irreversible</h2>
+            <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal de edición -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Editar Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" id="editProductId" name="product_id" />
+            <input type="hidden" id="stockInput" name="stockInput" />
+
+            <div class="mb-3">
+              <label for="editquantity" class="form-label">Stock:</label>
+              <label for="editquantity" class="form-label" id="Stock"></label>
+            </div>
+
+            <div class="mb-3">
+              <label for="editquantity" class="form-label">Quantity Sold</label>
+              <input type="number" class="form-control" id="editquantity" name="quantity_sold" required />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
+
+<script>
+  function llenarDatosEdicion(id, quantity, stock) {
+    document.getElementById('editProductId').value = id
+    document.getElementById('editquantity').value = quantity
+    document.getElementById('stockInput').value = stock
+    document.getElementById('Stock').textContent = stock
+  }
+
+  document.getElementById('editForm').addEventListener('submit', function (e) {
+    e.preventDefault()
+
+    showLoading('Actualizando Item...')
+    const formData = new FormData(this)
+
+    fetch(`edit/${formData.get('product_id')}/`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        hideLoading()
+        console.log(data.status)
+        if (data.status) {
+          window.location.reload()
+          console.log('Producto actualizado correctamente')
+          mostrarNotificacion('Producto actualizado correctamente', 'success')
+        } else {
+          mostrarNotificacion(data.message || 'Error al actualizar el producto', 'error')
+        }
+      })
+      .catch((error) => {
+        hideLoading()
+        console.error('Error:', error)
+        mostrarNotificacion('Ocurrió un error al editar el producto', 'error')
+        alert('Ocurrió un error al editar el producto')
+      })
+  })
+
+  add = () => {
+    console.log('Editando producto')
+  }
+
+  remove = () => {
+    console.log('Editando producto')
+  }
+
+  cart_item_id = 0
+
+  selectCartItem = (id) => {
+    console.log('Seleccionando producto')
+    console.log(id)
+    cart_item_id = id
+  }
+
+  FinalizarCompra = () => {
+    showLoading('Finalizando compra...')
+    fetch(`checkout/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        hideLoading()
+        if (data.status) {
+          window.location.reload()
+          mostrarNotificacion('Compra finalizada correctamente', 'success')
+        } else {
+          mostrarNotificacion('Error al finalizar la compra', 'error')
+        }
+      })
+      .catch((error) => {
+        hideLoading()
+        mostrarNotificacion('Error al finalizar la compra', 'error')
+        console.error('Error:', error)
+      })
+  }
+
+  document.getElementById('deleteModal').addEventListener('submit', function (e) {
+    e.preventDefault() // Previene el comportamiento por defecto
+    console.log(cart_item_id)
+    if (cart_item_id) {
+      console.log('Eliminando producto')
+      showLoading() // Muestra el loading
+
+      fetch(`delete/${cart_item_id}/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        }
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          hideLoading()
+          if (data.status === 'success') {
+            hideLoading()
+            window.location.reload()
+            mostrarNotificacion('Producto eliminado correctamente', 'success')
+          } else {
+            hideLoading()
+            mostrarNotificacion('Error al eliminar el producto', 'error')
+          }
+        })
+        .catch((error) => {
+          hideLoading()
+          mostrarNotificacion('Error al eliminar el producto', 'error')
+          console.error('Error:', error)
+        })
+    }
+  })
+
+  let loadingModal
+
+  function showLoading(message = 'Procesando...') {
+    document.getElementById('loadingMessage').textContent = message
+    if (!loadingModal) {
+      loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'))
+    }
+    loadingModal.show()
+  }
+
+  function hideLoading() {
+    if (loadingModal) {
+      loadingModal.hide()
+    }
+  }
+
+  function mostrarNotificacion(mensaje, tipo) {
+    const estilos = {
+      success: {
+        background: 'linear-gradient(to right, #00b09b, #96c93d)',
+        duration: 3000
+      },
+      error: {
+        background: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+        duration: 5000 // Más tiempo para mensajes de error
+      }
+    }
+
+    Toastify({
+      text: mensaje,
+      duration: estilos[tipo].duration,
+      style: estilos[tipo],
+      position: 'top-right',
+      close: true // Agregar botón de cerrar para notificaciones
+    }).showToast()
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+
+  body {
+    background-color: #000;
+    color: #fff;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card {
+    box-shadow: 0 6px 12px rgba(172, 165, 255, 0.1);
+  }
+
+  .products-gridtest {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 35px;
+    padding: 20px;
+    background: #000;
+    padding-top: 20px;
+  }
+
+
+  /* Añadir estos estilos */
+
+  .modal-content {
+    background: linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 100%);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #fff;
+  }
+
+  .modal-header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .modal-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    background: linear-gradient(90deg, #fff, #a8a8a8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .btn-close {
+    background: none;
+    border: none;
+    color: #fff;
+    background-color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+
+  .btn-close:hover {
+    color: #ff6b6b;
+  }
+
+  .modal-body {
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .modal-body h2 {
+    font-size: 1.2rem;
+    color: #ff6b6b;
+    margin-bottom: 1.5rem;
+  }
+
+  .btn-danger {
+    background: linear-gradient(45deg, #ff6b6b, #ff0000);
+    border: none;
+    border-radius: 10px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  }
+
+  .modal-dialog.modal-dialog-centered {
+    display: flex;
+    align-items: center;
+    min-height: calc(100% - 1rem);
+  }
+
+  .modal.show {
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+  }
+
+  .fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+  }
+
+  .fade-in {
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
+  }
+
+  #loadingModal {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    border-radius: 15px;
+    border: none;
+    /* Añadir esto */
+    box-shadow: none;
+    /* Añadir esto */
+  }
+
+  #loadingModal .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  /* Dots Wave mejorado */
+  .loader {
+    width: 100px;
+    height: 40px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .loader::before,
+  .loader::after,
+  .loader div {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: wave 1.2s infinite ease-in-out;
+  }
+
+  .loader::before {
+    left: 0;
+  }
+
+  .loader div {
+    left: 40px;
+    animation-delay: -0.2s;
+  }
+
+  .loader::after {
+    left: 80px;
+    animation-delay: -0.4s;
+  }
+
+  @keyframes wave {
+
+    0%,
+    100% {
+      transform: translateY(0);
+      background: #ffffff;
+    }
+
+    50% {
+      transform: translateY(20px);
+      background: #3498db;
+      /* Color azul cuando baja */
+    }
+  }
+
+  /* Estilo para el mensaje */
+  #loadingMessage {
+    font-size: 1.2rem;
+    color: #ffffff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+  }
+
+  #loadingModal {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    border-radius: 15px;
+    border: none;
+    box-shadow: none;
+    z-index: 1051;
+  }
+
+  .modal-backdrop {
+    z-index: 1050;
+  }
+
+  /* delete button styles */
+
+  .button {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: rgb(20, 20, 20);
+    border: none;
+    font-weight: 600;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+    cursor: pointer;
+    transition-duration: 0.3s;
+    overflow: hidden;
+    position: relative;
+    gap: 2px;
+  }
+
+  .svgIcon {
+    width: 12px;
+    transition-duration: 0.3s;
+  }
+
+  .svgIcon path {
+    fill: white;
+  }
+
+  .button:hover {
+    transition-duration: 0.3s;
+    background-color: rgb(255, 69, 69);
+    align-items: center;
+    gap: 0;
+  }
+
+  .bin-top {
+    transform-origin: bottom right;
+  }
+
+  .button:hover .bin-top {
+    transition-duration: 0.5s;
+    transform: rotate(160deg);
+  }
+
+  /* --------------*/
+  .btn-container {
+    display: flex;
+    gap: 10px;
+    /* Espacio entre los botones */
+    justify-content: center;
+    /* Centra los botones horizontalmente */
+  }
+
+  /* edit button styles */
+
+  .inc-dec-btn {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .inc-dec-btn:hover {
+    transform: translateY(-3px);
+  }
+
+  .inc-dec-btn:active {
+    transform: translateY(0) scale(0.95);
+  }
+
+  .inc-dec-btn-decrease {
+    background-color: #ffffff;
+    color: #333333;
+    border: 2px solid #333333;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .inc-dec-btn-decrease:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .inc-dec-btn-increase {
+    background-color: #333333;
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .inc-dec-btn-increase:hover {
+    background-color: #4a4a4a;
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  /*--------------*/
+
+  /* From Uiverse.io by vinodjangid07 */
+  .editBtn {
+    width: 55px;
+    height: 55px;
+    border-radius: 20px;
+    border: none;
+    background-color: rgb(93, 93, 116);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.123);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+
+  .editBtn::before {
+    content: '';
+    width: 200%;
+    height: 200%;
+    background-color: rgb(102, 102, 141);
+    position: absolute;
+    z-index: 1;
+    transform: scale(0);
+    transition: all 0.3s;
+    border-radius: 50%;
+    filter: blur(10px);
+  }
+
+  .editBtn:hover::before {
+    transform: scale(1);
+  }
+
+  .editBtn:hover {
+    box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.336);
+  }
+
+  .editBtn svg {
+    height: 17px;
+    fill: white;
+    z-index: 3;
+    transition: all 0.2s;
+    transform-origin: bottom;
+  }
+
+  .editBtn:hover svg {
+    transform: rotate(-15deg) translateX(5px);
+  }
+
+  .editBtn::after {
+    content: '';
+    width: 25px;
+    height: 1.5px;
+    position: absolute;
+    bottom: 19px;
+    left: -5px;
+    background-color: white;
+    border-radius: 2px;
+    z-index: 2;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease-out;
+  }
+
+  .editBtn:hover::after {
+    transform: scaleX(1);
+    left: 0px;
+    transform-origin: right;
+  }
+
+  /*Estilos boton de compra*/
+  .buy-btn-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20vh;
+    font-family: Arial, sans-serif;
+  }
+
+  .buy-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #ffffff;
+    background-color: #4caf50;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.8s ease, transform 0.8s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+  }
+
+  .buy-btn:hover {
+    background-color: #45a049;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .buy-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .buy-btn-icon {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    transition: background-image 0.8s ease;
+  }
+
+  .buy-btn-icon-cart {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  .buy-btn-icon-truck {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  .buy-btn:hover .buy-btn-icon-cart {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  /* estilos cuando no hay nada */
+
+  .cart-containerN {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+    animation: fadeIn 1s ease-out;
+  }
+
+  .cart-iconN {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: slideDown 0.8s ease-out forwards;
+  }
+
+  .cart-titleN {
+    font-size: 32px;
+    font-weight: 600;
+    margin-bottom: 12px;
+    opacity: 0;
+    animation: slideDown 0.8s ease-out 0.2s forwards;
+  }
+
+  .cart-messageN {
+    font-size: 17px;
+    color: #86868b;
+    margin-bottom: 30px;
+    max-width: 600px;
+    opacity: 0;
+    animation: slideDown 0.8s ease-out 0.4s forwards;
+  }
+
+  .cart-buttonN {
+    background-color: #0071e3;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 980px;
+    text-decoration: none;
+    font-size: 14px;
+    opacity: 0;
+    transition: background-color 0.3s;
+    animation: slideDown 0.8s ease-out 0.6s forwards;
+  }
+
+  .cart-buttonN:hover {
+    transform: translateY(-5px);
+    color: #2997ff;
+    background-color: #fff;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  footer {
+    background-color: #1d1d1f;
+    padding: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #86868b;
+  }
+
+  .gradient1 {
+    background: linear-gradient(94deg, #0090F7, #BA62FC, #F2416B, #F55600);
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+</style>

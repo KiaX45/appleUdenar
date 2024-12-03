@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f4f4f9; margin: 0; padding: 20px;">
+    <div style="max-width: 600px; margin: auto; background: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+        <div style="text-align: center; background-color: #007BFF; color: white; padding: 10px 0; border-radius: 10px 10px 0 0;">
+            <h1>¡Hola! {{ name }}</h1>
+        </div>
+        <div style="padding: 20px;">
+            <p>Gracias por tu compra en <strong>Productos</strong>. Aquí tienes los detalles de tu pedido:</p>
+            <h2 style="color: #007BFF;">Detalles del pedido</h2>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 8px 0; border-bottom: 1px solid #f4f4f9;">Producto</th>
+                        <th style="text-align: left; padding: 8px 0; border-bottom: 1px solid #f4f4f9;">Cantidad</th>
+                        <th style="text-align: left; padding: 8px 0; border-bottom: 1px solid #f4f4f9;">Precio</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #f4f4f9;">{{ product.name }}</td>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #f4f4f9;">{{ product.quantity }}</td>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #f4f4f9;">$ {{ product.pagado }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #f4f4f9;"></td>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #f4f4f9;"><strong>Total</strong></td>
+                        <td style="padding: 8px 0; border-bottom: 1px solid #f4f4f9;"><strong>$ {{ total }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p>El pedido será enviado a la siguiente dirección:</p>
+            <p><strong>{{ address }}</strong></p>
+            <p>Si tienes alguna pregunta sobre tu pedido, por favor, responde a este correo.</p>
+
+
+
+
+
+        <div style="margin-top: 20px; text-align: center; font-size: 12px; color: #999999;">
+            <p>Gracias por elegirnos.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!-- Enlaces CDN -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<!-- Botón para abrir el formulario -->
+<button onclick="FormularioModal.mostrar()" class="btn btn-primary">
+    Abrir Formulario
+</button>
+
+<script>
+// Clase para manejar el formulario modal
+class FormularioModal {
+    static isOpen = false;
+    static toastInstance = null;
+
+    static mostrar() {
+        if (this.isOpen) return;
+        
+        this.isOpen = true;
+        this.toastInstance = Toastify({
+            node: this.crearNodoFormulario(),
+            duration: -1,
+            close: false,
+            gravity: "center",
+            position: "center",
+            className: "modal-formulario",
+            style: {
+                background: "white",
+                color: "black",
+                minWidth: "300px",
+                padding: "2rem",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                borderRadius: "8px"
+            }
+        }).showToast();
+    }
+
+    static crearNodoFormulario() {
+        const div = document.createElement('div');
+        div.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="m-0">Mi Formulario</h3>
+                <button onclick="FormularioModal.cerrar()" 
+                        class="btn-close" 
+                        aria-label="Close">
+                </button>
+            </div>
+            <form id="miFormulario" onsubmit="FormularioModal.enviar(event)">
+                {% csrf_token %}
+                {{ form.as_p|safe }}
+                <div class="d-flex gap-2 justify-content-end mt-4">
+                    <button type="button" 
+                            class="btn btn-warning" 
+                            onclick="FormularioModal.cerrar()">
+                        Cancelar
+                    </button>
+                    <button type="submit" 
+                            class="btn btn-success" 
+                            id="btnSubmit">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        `;
+        return div;
+    }
+
+    static cerrar() {
+        if (!this.isOpen) return;
+        
+        this.isOpen = false;
+        const modal = document.querySelector('.modal-formulario');
+        if (modal) {
+            modal.remove();
+        }
+    }
+
+    static async enviar(e) {
+        e.preventDefault();
+        
+        // Deshabilitar el botón de envío para prevenir doble submit
+        const submitButton = document.getElementById('btnSubmit');
+        submitButton.disabled = true;
+        submitButton.innerHTML = 'Enviando...';
+
+        try {
+            const form = document.getElementById('miFormulario');
+            const formData = new FormData(form);
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            const response = await fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'  // Indica que es una petición AJAX
+                }
+            });
+
+            // Verificar el tipo de contenido de la respuesta
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                throw new Error('La respuesta del servidor no es JSON. Posiblemente ha ocurrido un error en el servidor.');
+            }
+
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                this.mostrarNotificacion('¡Formulario enviado con éxito!', 'success');
+                this.cerrar();
+                // Opcional: recargar la página o actualizar los datos
+                window.location.reload();
+            } else {
+                // Si hay mensajes de error específicos del servidor
+                const mensaje = data.message || 'Hubo un error al procesar el formulario';
+                this.mostrarNotificacion(mensaje, 'error');
+                // Habilitar el botón nuevamente
+                submitButton.disabled = false;
+                submitButton.innerHTML = 'Guardar';
+            }
+        } catch (error) {
+            console.error('Error al enviar formulario:', error);
+            if (error.message.includes('no es JSON')) {
+                this.mostrarNotificacion('Error del servidor. Por favor, verifica tu sesión e intenta nuevamente.', 'error');
+            } else {
+                this.mostrarNotificacion('Error de conexión. Por favor, intenta nuevamente.', 'error');
+            }
+            // Habilitar el botón nuevamente
+            submitButton.disabled = false;
+            submitButton.innerHTML = 'Guardar';
+        }
+    }
+
+    static mostrarNotificacion(mensaje, tipo) {
+        const estilos = {
+            success: { 
+                background: "linear-gradient(to right, #00b09b, #96c93d)",
+                duration: 3000
+            },
+            error: { 
+                background: "linear-gradient(to right, #ff5f6d, #ffc371)",
+                duration: 5000  // Más tiempo para mensajes de error
+            }
+        };
+
+        Toastify({
+            text: mensaje,
+            duration: estilos[tipo].duration,
+            style: estilos[tipo],
+            position: "top-right",
+            close: true  // Agregar botón de cerrar para notificaciones
+        }).showToast();
+    }
+}
+</script>
+
+<style>
+.modal-formulario {
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+    .modal-formulario {
+        min-width: 500px;
+    }
+}
+
+/* Estilos para el botón deshabilitado */
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+</style>

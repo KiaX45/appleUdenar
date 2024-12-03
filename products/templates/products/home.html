@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Apple Udenar</title>
+  <!-- Incluye Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/152/152752.png" type="image/png">
+</head>
+
+<body>
+  {% include 'users/nav.html' %}
+
+
+
+  <!-- Section de inicio -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <span class="gradient1">Hello, Apple Intelligence.</span>
+
+      <h1>Bienvenido al Futuro</h1>
+      <p>Descubre nuestra nueva colección</p>
+      <div class="buttons">
+        <a href="#products" class="button button-primary button-test1">Comprar</a>
+        <a href="#ad" class="button button-secondary button-test">Más información</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="ad-section" id="ad">
+    <div class="ad-content">
+      <h2 class="gradient1">Descubre la Innovación</h2>
+      <div class="ad-products">
+        <div class="ad-product">
+          <img
+            src="https://www.apple.com/v/macbook-pro/al/images/overview/welcome/welcome_hero_endframe__c61x1mv7kgqe_medium.jpg"
+            alt="MacBook Pro" class="ad-image">
+          <h3>MacBook Pro</h3>
+          <p>Potencia extraordinaria</p>
+        </div>
+        <div class="ad-product">
+          <img
+            src="https://www.apple.com/v/iphone-16-pro/c/images/overview/welcome/hero_endframe__b3cjfkquc2s2_medium.jpg"
+            alt="iPhone" class="ad-image">
+          <h3>iPhone</h3>
+          <p>Magia en tus manos</p>
+        </div>
+        <div class="ad-product">
+          <img src="https://www.apple.com/v/airpods/x/images/overview/pro_endframe__e2wscfy18pme_medium.jpg"
+            alt="AirPods Pro" class="ad-image">
+          <h3>AirPods Pro</h3>
+          <p>Sonido inmersivo</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+
+
+
+
+
+    // Añadir efecto parallax al hacer scroll
+    window.addEventListener('scroll', () => {
+      const heroSection = document.querySelector('.hero-section');
+      const scrolled = window.pageYOffset;
+      heroSection.style.transform = `translateY(${scrolled * 0.5}px)`;
+    });
+
+    // Añadir efecto de aparición a las tarjetas de productos
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    });
+
+    document.querySelectorAll('.product-card').forEach((card) => {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(50px)';
+      card.style.transition = 'all 0.6s ease-out';
+      observer.observe(card);
+    });
+
+    // Efecto parallax para la sección de publicidad
+    window.addEventListener('scroll', () => {
+      const adSection = document.querySelector('.ad-section');
+      const scrolled = window.pageYOffset;
+      const rate = scrolled * -0.3;
+      adSection.style.backgroundPosition = `center ${rate}px`;
+    });
+
+    // Animación de entrada para los productos en la sección de publicidad
+    const adObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationDelay = `${index * 0.2}s`;
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.ad-product').forEach((product) => {
+      product.style.animationPlayState = 'paused';
+      adObserver.observe(product);
+    });
+  </script>
+
+  <section class="create-product">
+    {% if user.is_staff %}
+    {% include 'products/create_product.html' %}
+    {% endif %}
+
+  </section>
+
+  <!-- Section de los productos -->
+  <div class="products-grid" id="products">
+    <label for="currency">Selecciona una moneda:</label>
+    <select id="currency">
+        <option value="USD">Dólar (USD)</option>
+        <option value="EUR">Euro (EUR)</option>
+        <option value="JPY">Yen (JPY)</option>
+        <option value="COP">Peso Colombiano (COP)</option>
+    </select>
+  <div class="products-grid" id="products">
+    {% for product in products %}
+    <div class="product-card">
+
+      <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+      <h3>{{ product.name }}</h3>
+      <p>{{ product.description }}</p>
+      <a href="#" class="button button-primary" id="product.price_button">Desde ${{ product.price_formatted }}</a>
+      {% if user.is_staff %}
+      <button
+        onclick="llenarDatosEdicion({{ product.id }}, '{{ product.name }}', '{{ product.description }}', {{ product.price }}, {{ product.stock }}, {{product.quantity_sold}})"
+        type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editModal">Editar</button>
+      <button onclick="llenardatos({{ product.id }})" type="button" class="btn btn-danger" data-bs-toggle="modal"
+        data-bs-target="#deleteModal">Eliminar Producto</button>
+      {% else %}
+      <button onclick="comprobarUser({{ user.is_authenticated|yesno:'true,false' }}, {{product.id}})">
+        <div class="default-btn">
+          <svg viewBox="0 0 24 24" width="20" height="20" stroke="#ffffff" stroke-width="2" fill="none"
+            stroke-linecap="round" stroke-linejoin="round" class="cart-icon">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          <span>Agregar al carrito</span>
+        </div>
+        <div class="hover-btn">
+          <svg viewBox="0 0 320 512" width="12.5" height="20" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M160 0c17.7 0 32 14.3 32 32V67.7c1.6 .2 3.1 .4 4.7 .7c.4 .1 .7 .1 1.1 .2l48 8.8c17.4 3.2 28.9 19.9 25.7 37.2s-19.9 28.9-37.2 25.7l-47.5-8.7c-31.3-4.6-58.9-1.5-78.3 6.2s-27.2 18.3-29 28.1c-2 10.7-.5 16.7 1.2 20.4c1.8 3.9 5.5 8.3 12.8 13.2c16.3 10.7 41.3 17.7 73.7 26.3l2.9 .8c28.6 7.6 63.6 16.8 89.6 33.8c14.2 9.3 27.6 21.9 35.9 39.5c8.5 17.9 10.3 37.9 6.4 59.2c-6.9 38-33.1 63.4-65.6 76.7c-13.7 5.6-28.6 9.2-44.4 11V480c0 17.7-14.3 32-32 32s-32-14.3-32-32V445.1c-.4-.1-.9-.1-1.3-.2l-.2 0 0 0c-24.4-3.8-64.5-14.3-91.5-26.3c-16.1-7.2-23.4-26.1-16.2-42.2s26.1-23.4 42.2-16.2c20.9 9.3 55.3 18.5 75.2 21.6c31.9 4.7 58.2 2 76-5.3c16.9-6.9 24.6-16.9 26.8-28.9c1.9-10.6 .4-16.7-1.3-20.4c-1.9-4-5.6-8.4-13-13.3c-16.4-10.7-41.5-17.7-74-26.3l-2.8-.7 0 0C119.4 279.3 84.4 270 58.4 253c-14.2-9.3-27.5-22-35.8-39.6c-8.4-17.9-10.1-37.9-6.1-59.2C23.7 116 52.3 91.2 84.8 78.3c13.3-5.3 27.9-8.9 43.2-11V32c0-17.7 14.3-32 32-32z"
+              fill="#ffffff"></path>
+          </svg>
+          <span>{{ product.price_formatted }}</span>
+        </div>
+      </button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+
+
+
+  <!-- Modal de confirmación de eliminación -->
+  <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">¿Seguro que desea eliminar este producto?</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="deleteForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <h2>Esta accion es irreversible</h2>
+            <button type="submit" class="btn btn-danger">Confirmar Eliminación</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para editar producto -->
+  <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Editar Producto</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editForm" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" id="editProductId" name="product_id" />
+
+            <div class="mb-3">
+              <label for="editName" class="form-label">Nombre del Producto</label>
+              <input type="text" class="form-control" id="editName" name="name" required />
+            </div>
+
+            <div class="mb-3">
+              <label for="editDescription" class="form-label">Descripción</label>
+              <textarea class="form-control" id="editDescription" name="description" required></textarea>
+            </div>
+
+            <div class="mb-3">
+              <label for="editPrice" class="form-label">Precio</label>
+              <input type="number" step="0.01" class="form-control" id="editPrice" name="price" required />
+            </div>
+
+            <div class="mb-3">
+              <label for="editStock" class="form-label">Stock</label>
+              <input type="number" class="form-control" id="editStock" name="stock" required />
+            </div>
+
+            <div class="mb-3">
+              <label for="editquantity" class="form-label">Quantity Sold</label>
+              <input type="number" class="form-control" id="editquantity" name="quantity_sold" required />
+            </div>
+
+            <div class="mb-3">
+              <label for="editImage" class="form-label">Imagen del Producto</label>
+              <input type="file" class="form-control" id="editImage" name="image" accept="image/*" />
+              <small class="text-muted">Dejar vacío para mantener la imagen actual</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-transparent border-0">
+        <div class="modal-body text-center">
+          <div class="loader">
+            <div></div>
+          </div>
+          <h5 class="text-light mt-4" id="loadingMessage">Procesando...</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Copyright © 2024 Udenar. Todos los derechos reservados.
+  </footer>
+</body>
+
+</html>
+<script>
+// Selecciona todos los botones con la clase "price-button"
+const priceButtons = document.querySelectorAll('.button button-primary');
+
+// Itera sobre cada botón y aplica la lógica
+priceButtons.forEach((button) => {
+  let value = button.textContent;
+
+  // Limpia el texto para extraer el número
+  value = value.replace(/[^0-9.]/g, ''); // Quita caracteres no numéricos ni punto
+  
+  // Convierte el valor a número
+  const numericValue = parseFloat(value);
+  
+  // Formatea el número como moneda
+  const valueFormatted = numericValue.toLocaleString('es-ES', { style: 'currency', currency: 'USD' });
+  
+  // Actualiza el texto del botón
+  button.textContent = `Desde ${valueFormatted}`;
+});
+
+  
+
+
+
+
+  const currencySelect = document.getElementById('currency');
+
+  currencySelect.addEventListener('change', (event) => {
+    const currency = event.target.value;
+    console.log(currency);
+
+    fetch(`/product/change_currency/${currency}/`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          window.location.reload();
+          mostrarNotificacion(`Moneda cambiada correctamente ha ${currency}`, 'success');
+        } else {
+          alert('Ocurrió un error al cambiar la moneda');
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        alert('Ocurrió un error al cambiar la moneda');
+      });
+  });
+
+
+
+  let idProdcuto = 0
+
+  function llenardatos(id) {
+    console.log(id)
+    idProdcuto = id
+  }
+
+  document.getElementById('deleteForm').addEventListener('submit', function (e) {
+    e.preventDefault()
+
+    showLoading('Eliminando producto...')
+
+    fetch(`/product/delete/${idProdcuto}/`, {
+      // Asegúrate de incluir la barra inicial
+      method: 'POST',
+      body: new FormData(this),
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}' // Añade el token CSRF
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          hideLoading()
+          window.location.reload()
+          mostrarNotificacion('Producto eliminado correctamente', 'success')
+        } else {
+          hideLoading()
+          alert(data.message)
+          mostrarNotificacion('Ocurrió un error al eliminar el producto', 'error')
+        }
+      })
+      .catch((error) => {
+        hideLoading()
+        console.error('Error:', error)
+        mostrarNotificacion('Ocurrió un error al eliminar el producto', 'error')
+        alert('Ocurrió un error al eliminar el producto')
+      })
+  })
+
+  function llenarDatosEdicion(id, name, description, price, stock, quantity_sold) {
+    console.log(name)
+    console.log(quantity_sold)
+    document.getElementById('editProductId').value = id
+    document.getElementById('editName').value = name
+    document.getElementById('editDescription').value = description
+    document.getElementById('editPrice').value = price
+    document.getElementById('editStock').value = stock
+    document.getElementById('editquantity').value = quantity_sold
+  }
+
+  let loadingModal
+
+  function showLoading(message = 'Procesando...') {
+    document.getElementById('loadingMessage').textContent = message
+    if (!loadingModal) {
+      loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'))
+    }
+    loadingModal.show()
+  }
+
+  function hideLoading() {
+    if (loadingModal) {
+      loadingModal.hide()
+    }
+  }
+
+  // Actualizar el event listener del formulario de edición
+  document.getElementById('editForm').addEventListener('submit', function (e) {
+    e.preventDefault()
+
+    showLoading('Actualizando producto...')
+    const formData = new FormData(this)
+
+    fetch(`/product/update/${formData.get('product_id')}/`, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        hideLoading()
+        if (data.success) {
+          window.location.reload()
+          mostrarNotificacion('Producto actualizado correctamente', 'success')
+        } else {
+          alert(data.message || 'Error al actualizar el producto')
+        }
+      })
+      .catch((error) => {
+        hideLoading()
+        console.error('Error:', error)
+        mostrarNotificacion('Ocurrió un error al editar el producto', 'error')
+        alert('Ocurrió un error al editar el producto')
+      })
+  })
+
+  comprobarUser = (is_authenticated, product_id) => {
+    if (is_authenticated) {
+      console.log(product_id)
+      addToCart(product_id)
+    } else {
+      mostrarNotificacion('Debes iniciar sesión para agregar productos al carrito', 'error')
+    }
+  }
+
+  function mostrarNotificacion(mensaje, tipo) {
+    const estilos = {
+      success: {
+        background: 'linear-gradient(to right, #00b09b, #96c93d)',
+        duration: 3000
+      },
+      error: {
+        background: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+        duration: 5000 // Más tiempo para mensajes de error
+      }
+    }
+
+    Toastify({
+      text: mensaje,
+      duration: estilos[tipo].duration,
+      style: estilos[tipo],
+      position: 'top-right',
+      close: true // Agregar botón de cerrar para notificaciones
+    }).showToast()
+  }
+
+
+  //funcion para agregar al carrito
+  function addToCart(product_id) {
+    showLoading('Agregando producto al carrito...');
+    fetch(`create_cart/${product_id}/`, {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'  // Token CSRF para seguridad
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        hideLoading();
+        if (data.status === 'success') {  // Comprobamos si el estado es 'success'
+          mostrarNotificacion('Producto agregado al carrito', 'success');
+        } else {
+          mostrarNotificacion('Error al agregar el producto al carrito', 'error');
+        }
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        mostrarNotificacion('Error al agregar el producto al carrito', 'error');
+      });
+  }
+
+
+</script>
+
+<!-- Incluye Bootstrap JS y dependencias de Popper.js -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+<style>
+  .fade-out {
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+  }
+
+  .fade-in {
+    opacity: 1;
+    transition: opacity 0.5s ease-in;
+  }
+
+  #loadingModal .modal-content {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+  }
+
+  #loadingModal .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+
+  /* Estilo del modal */
+  #loadingModal .modal-content {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    border-radius: 15px;
+  }
+
+  /* Dots Wave mejorado */
+  .loader {
+    width: 100px;
+    height: 40px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .loader::before,
+  .loader::after,
+  .loader div {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #ffffff;
+    border-radius: 50%;
+    animation: wave 1.2s infinite ease-in-out;
+  }
+
+  .loader::before {
+    left: 0;
+  }
+
+  .loader div {
+    left: 40px;
+    animation-delay: -0.2s;
+  }
+
+  .loader::after {
+    left: 80px;
+    animation-delay: -0.4s;
+  }
+
+  @keyframes wave {
+
+    0%,
+    100% {
+      transform: translateY(0);
+      background: #ffffff;
+    }
+
+    50% {
+      transform: translateY(20px);
+      background: #3498db;
+      /* Color azul cuando baja */
+    }
+  }
+
+  /* Estilo para el mensaje */
+  #loadingMessage {
+    font-size: 1.2rem;
+    color: #ffffff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+  }
+
+  /* From Uiverse.io by dldrs */
+  button {
+    position: relative;
+    overflow: hidden;
+    outline: none;
+    cursor: pointer;
+    border-radius: 0px;
+    border: none;
+    background-color: hsl(255deg 50% 40%);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .default-btn {
+    background-image: linear-gradient(90.1deg, rgba(84, 212, 228, 1) 0.2%, rgba(68, 36, 164, 1) 99.9%);
+  }
+
+  .default-btn,
+  .hover-btn {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 1em 3em;
+    border-radius: 0px;
+    font-size: 14px;
+    font-weight: 500;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+  }
+
+  .hover-btn {
+    position: absolute;
+    inset: 0;
+    font-size: 16px;
+    padding: 1em 3em;
+    text-align: center;
+    background: rgb(26, 35, 126);
+    background: linear-gradient(63deg, rgba(26, 35, 126, 1) 0%, rgba(69, 39, 160, 1) 100%);
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+    transform: translate(0%, 100%);
+  }
+
+  .default-btn span {
+    color: hsl(0, 0%, 100%);
+  }
+
+  .hover-btn span {
+    color: hsl(0, 0%, 100%);
+  }
+
+  button:hover .default-btn {
+    transform: translate(0%, -100%);
+  }
+
+  button:hover .hover-btn {
+    transform: translate(0%, 0%);
+  }
+
+
+  /* Estilos Nicky */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  }
+
+  .hero-section {
+    height: 100vh;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-content {
+    z-index: 2;
+  }
+
+  .hero-section h1 {
+    font-size: 56px;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1s forwards;
+  }
+
+  .hero-section p {
+    font-size: 24px;
+    margin-bottom: 20px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1s 0.3s forwards;
+  }
+
+  .buttons {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 1s 0.6s forwards;
+  }
+
+  .button {
+    display: inline-block;
+    padding: 12px 30px;
+    margin: 0 10px;
+    border-radius: 980px;
+    text-decoration: none;
+    font-size: 17px;
+    transition: all 0.3s;
+  }
+
+  .button-primary {
+    background: #0071e3;
+    color: white;
+  }
+
+  .button-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    color: #2997ff;
+  }
+
+  .button-test:hover {
+    transform: translateY(-5px);
+    color: #fff;
+  }
+
+  .button-test1:hover {
+    transform: translateY(-5px);
+    color: #2997ff;
+    background-color: #fff;
+  }
+
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+    gap: 35px;
+    padding: 20px;
+    background: #000;
+    padding-top: 20px;
+  }
+
+  .product-card {
+    background: #1d1d1f;
+    border-radius: 18px;
+    padding: 20px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+    transition: transform 0.8s;
+    cursor: pointer;
+    height: 600px;
+  }
+
+  .product-card:hover {
+    transform: translateY(-5px);
+    animation: colorChange1 10s linear infinite;
+  }
+
+  .product-image {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    margin-bottom: 20px;
+    border-radius: 8px;
+  }
+
+  .product-card h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .product-card p {
+    color: #86868b;
+    margin-bottom: 20px;
+  }
+
+  @keyframes fadeUp {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes colorChange1 {
+
+    0%,
+    100% {
+      box-shadow: 0 4px 8px #ff6b6b;
+    }
+
+    20% {
+      box-shadow: 0 6px 12px #feca57;
+    }
+
+    40% {
+      box-shadow: 0 8px 16px #48dbfb;
+    }
+
+    60% {
+      box-shadow: 0 6px 12px #ff9ff3;
+    }
+
+    80% {
+      box-shadow: 0 4px 8px #1dd1a1;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .products-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .hero-section h1 {
+      font-size: 40px;
+    }
+
+    .hero-section p {
+      font-size: 20px;
+    }
+
+    .product-image {
+      max-height: 300px;
+    }
+
+  .button-primary {
+    margin-bottom: 20px;
+  }
+  }
+
+  .gradient1 {
+    background: linear-gradient(94deg, #0090F7, #BA62FC, #F2416B, #F55600);
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+  }
+
+  .ad-section {
+    background: linear-gradient(to bottom, #000, #1a1a1a);
+    padding: 100px 0;
+    color: white;
+    overflow: hidden;
+  }
+
+  .ad-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .ad-content h2 {
+    font-size: 48px;
+    margin-bottom: 50px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 1s forwards;
+  }
+
+  .ad-products {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+
+  .ad-product {
+    flex-basis: calc(33.333% - 40px);
+    margin: 20px;
+    opacity: 0;
+    transform: translateY(30px);
+    animation: fadeUp 1s forwards;
+  }
+
+  .ad-image {
+    width: 100%;
+    width: 300px;
+    height: 200px;
+    margin-bottom: 20px;
+    transition: transform 0.8s ease;
+  }
+
+  .ad-product:hover .ad-image {
+    transform: scale(1.05);
+  }
+
+  .ad-product h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .ad-product p {
+    color: #86868b;
+  }
+
+  @media (max-width: 768px) {
+    .ad-product {
+      flex-basis: 100%;
+    }
+  }
+
+  footer {
+    background-color: #1d1d1f;
+    padding: 20px;
+    text-align: center;
+    font-size: 12px;
+    color: #86868b;
+  }
+</style>

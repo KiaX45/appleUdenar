@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>FinalizandoCompra</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/107/107831.png" type="image/png">
+      </head>
+<body>
+    {% include 'users/nav.html' %}
+    <div class="nav" style="margin-bottom: 100px;"></div>
+    <h1>Su pago se ha completado satisfactoriamente</h1>
+  
+    <a href="{% url 'products:home' %}" class="btn btn-primary">Regresar a Inicio</a>
+
+
+    <!-- Modal de carga -->
+    <div class="modal fade" id="loadingModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-hidden="true" style="z-index: 1051;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-transparent border-0">
+        <div class="modal-body text-center">
+          <div class="loader">
+            <div></div>
+          </div>
+          <h5 class="text-light mt-4" id="loadingMessage">Procesando...</h5>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
+
+
+<script>
+
+    let pagado = false;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!pagado) {
+            FinalizarCompra();
+        }
+        
+    });
+
+    FinalizarCompra = () => {
+        showLoading('Finalizando compra...')
+        fetch(`checkout/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+          }
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            hideLoading()
+            if (data.status) {
+              mostrarNotificacion('Compra finalizada correctamente', 'success')
+            } else {
+              mostrarNotificacion('Error al finalizar la compra', 'error')
+            }
+          })
+          .catch((error) => {
+            hideLoading()
+            mostrarNotificacion('Error al finalizar la compra', 'error')
+            console.error('Error:', error)
+          })
+      }
+
+    let loadingModal
+
+    function showLoading(message = 'Procesando...') {
+      document.getElementById('loadingMessage').textContent = message
+      if (!loadingModal) {
+        loadingModal = new bootstrap.Modal(document.getElementById('loadingModal'))
+      }
+      loadingModal.show()
+    }
+  
+    function hideLoading() {
+      if (loadingModal) {
+        loadingModal.hide()
+      }
+    }
+  
+    function mostrarNotificacion(mensaje, tipo) {
+      const estilos = {
+        success: {
+          background: 'linear-gradient(to right, #00b09b, #96c93d)',
+          duration: 3000
+        },
+        error: {
+          background: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+          duration: 5000 // Más tiempo para mensajes de error
+        }
+      }
+  
+      Toastify({
+        text: mensaje,
+        duration: estilos[tipo].duration,
+        style: estilos[tipo],
+        position: 'top-right',
+        close: true // Agregar botón de cerrar para notificaciones
+      }).showToast()
+    }   
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+  
+    body {
+      background-color: #000;
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+  
+    .card {
+      box-shadow: 0 6px 12px rgba(172, 165, 255, 0.1);
+    }
+  
+    .products-gridtest {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 35px;
+      padding: 20px;
+      background: #000;
+      padding-top: 20px;
+    }
+  
+  
+    /* Añadir estos estilos */
+  
+    .modal-content {
+      background: linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 100%);
+      border-radius: 20px;
+      box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #fff;
+    }
+  
+    .modal-header {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background: linear-gradient(90deg, #fff, #a8a8a8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  
+    .btn-close {
+      background: none;
+      border: none;
+      color: #fff;
+      background-color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+  
+    .btn-close:hover {
+      color: #ff6b6b;
+    }
+  
+    .modal-body {
+      padding: 2rem;
+      text-align: center;
+    }
+  
+    .modal-body h2 {
+      font-size: 1.2rem;
+      color: #ff6b6b;
+      margin-bottom: 1.5rem;
+    }
+  
+    .btn-danger {
+      background: linear-gradient(45deg, #ff6b6b, #ff0000);
+      border: none;
+      border-radius: 10px;
+      padding: 0.8rem 1.5rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+  
+    .btn-danger:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+  
+    .modal-dialog.modal-dialog-centered {
+      display: flex;
+      align-items: center;
+      min-height: calc(100% - 1rem);
+    }
+  
+    .modal.show {
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(5px);
+    }
+  
+    .fade-out {
+      opacity: 0;
+      transition: opacity 0.5s ease-out;
+    }
+  
+    .fade-in {
+      opacity: 1;
+      transition: opacity 0.5s ease-in;
+    }
+  
+    #loadingModal {
+      background-color: rgba(0, 0, 0, 0.6) !important;
+      border-radius: 15px;
+      border: none;
+      /* Añadir esto */
+      box-shadow: none;
+      /* Añadir esto */
+    }
+  
+    #loadingModal .spinner-border {
+      width: 3rem;
+      height: 3rem;
+    }
+  
+    /* Dots Wave mejorado */
+    .loader {
+      width: 100px;
+      height: 40px;
+      margin: 0 auto;
+      position: relative;
+    }
+  
+    .loader::before,
+    .loader::after,
+    .loader div {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: wave 1.2s infinite ease-in-out;
+    }
+  
+    .loader::before {
+      left: 0;
+    }
+  
+    .loader div {
+      left: 40px;
+      animation-delay: -0.2s;
+    }
+  
+    .loader::after {
+      left: 80px;
+      animation-delay: -0.4s;
+    }
+  
+    @keyframes wave {
+  
+      0%,
+      100% {
+        transform: translateY(0);
+        background: #ffffff;
+      }
+  
+      50% {
+        transform: translateY(20px);
+        background: #3498db;
+        /* Color azul cuando baja */
+      }
+    }
+  
+    /* Estilo para el mensaje */
+    #loadingMessage {
+      font-size: 1.2rem;
+      color: #ffffff;
+      text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+      font-weight: 500;
+    }
+  
+    #loadingModal {
+      background-color: rgba(0, 0, 0, 0.6) !important;
+      border-radius: 15px;
+      border: none;
+      box-shadow: none;
+      z-index: 1051;
+    }
+  
+    .modal-backdrop {
+      z-index: 1050;
+    }
+  
+    /* delete button styles */
+  
+    .button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: rgb(20, 20, 20);
+      border: none;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+      cursor: pointer;
+      transition-duration: 0.3s;
+      overflow: hidden;
+      position: relative;
+      gap: 2px;
+    }
+  
+    .svgIcon {
+      width: 12px;
+      transition-duration: 0.3s;
+    }
+  
+    .svgIcon path {
+      fill: white;
+    }
+  
+    .button:hover {
+      transition-duration: 0.3s;
+      background-color: rgb(255, 69, 69);
+      align-items: center;
+      gap: 0;
+    }
+  
+    .bin-top {
+      transform-origin: bottom right;
+    }
+  
+    .button:hover .bin-top {
+      transition-duration: 0.5s;
+      transform: rotate(160deg);
+    }
+  
+    /* --------------*/
+    .btn-container {
+      display: flex;
+      gap: 10px;
+      /* Espacio entre los botones */
+      justify-content: center;
+      /* Centra los botones horizontalmente */
+    }
+  
+    /* edit button styles */
+  
+    .inc-dec-btn {
+      width: 60px;
+      height: 60px;
+      font-size: 28px;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+  
+    .inc-dec-btn:hover {
+      transform: translateY(-3px);
+    }
+  
+    .inc-dec-btn:active {
+      transform: translateY(0) scale(0.95);
+    }
+  
+    .inc-dec-btn-decrease {
+      background-color: #ffffff;
+      color: #333333;
+      border: 2px solid #333333;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  
+    .inc-dec-btn-decrease:hover {
+      background-color: #f0f0f0;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+  
+    .inc-dec-btn-increase {
+      background-color: #333333;
+      color: #ffffff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+  
+    .inc-dec-btn-increase:hover {
+      background-color: #4a4a4a;
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+  
+    /*--------------*/
+  
+    /* From Uiverse.io by vinodjangid07 */
+    .editBtn {
+      width: 55px;
+      height: 55px;
+      border-radius: 20px;
+      border: none;
+      background-color: rgb(93, 93, 116);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.123);
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s;
+    }
+  
+    .editBtn::before {
+      content: '';
+      width: 200%;
+      height: 200%;
+      background-color: rgb(102, 102, 141);
+      position: absolute;
+      z-index: 1;
+      transform: scale(0);
+      transition: all 0.3s;
+      border-radius: 50%;
+      filter: blur(10px);
+    }
+  
+    .editBtn:hover::before {
+      transform: scale(1);
+    }
+  
+    .editBtn:hover {
+      box-shadow: 0px 5px 10px rgba(0, 0, 0, 0.336);
+    }
+  
+    .editBtn svg {
+      height: 17px;
+      fill: white;
+      z-index: 3;
+      transition: all 0.2s;
+      transform-origin: bottom;
+    }
+  
+    .editBtn:hover svg {
+      transform: rotate(-15deg) translateX(5px);
+    }
+  
+    .editBtn::after {
+      content: '';
+      width: 25px;
+      height: 1.5px;
+      position: absolute;
+      bottom: 19px;
+      left: -5px;
+      background-color: white;
+      border-radius: 2px;
+      z-index: 2;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease-out;
+    }
+  
+    .editBtn:hover::after {
+      transform: scaleX(1);
+      left: 0px;
+      transform-origin: right;
+    }
+  
+    /*Estilos boton de compra*/
+    .buy-btn-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 20vh;
+      font-family: Arial, sans-serif;
+    }
+  
+    .buy-btn {
+      padding: 15px 30px;
+      font-size: 18px;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #ffffff;
+      background-color: #4caf50;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background-color 0.8s ease, transform 0.8s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+    }
+  
+    .buy-btn:hover {
+      background-color: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+  
+    .buy-btn:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  
+    .buy-btn-icon {
+      display: inline-block;
+      width: 24px;
+      height: 24px;
+      margin-right: 10px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      transition: background-image 0.8s ease;
+    }
+  
+    .buy-btn-icon-cart {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z'%3E%3C/path%3E%3C/svg%3E");
+    }
+  
+    .buy-btn-icon-truck {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4'%3E%3C/path%3E%3C/svg%3E");
+    }
+  
+    .buy-btn:hover .buy-btn-icon-cart {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4'%3E%3C/path%3E%3C/svg%3E");
+    }
+  
+    /* estilos cuando no hay nada */
+  
+    .cart-containerN {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      animation: fadeIn 1s ease-out;
+    }
+  
+    .cart-iconN {
+      width: 50px;
+      height: 50px;
+      margin-bottom: 20px;
+      opacity: 0;
+      animation: slideDown 0.8s ease-out forwards;
+    }
+  
+    .cart-titleN {
+      font-size: 32px;
+      font-weight: 600;
+      margin-bottom: 12px;
+      opacity: 0;
+      animation: slideDown 0.8s ease-out 0.2s forwards;
+    }
+  
+    .cart-messageN {
+      font-size: 17px;
+      color: #86868b;
+      margin-bottom: 30px;
+      max-width: 600px;
+      opacity: 0;
+      animation: slideDown 0.8s ease-out 0.4s forwards;
+    }
+  
+    .cart-buttonN {
+      background-color: #0071e3;
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 980px;
+      text-decoration: none;
+      font-size: 14px;
+      opacity: 0;
+      transition: background-color 0.3s;
+      animation: slideDown 0.8s ease-out 0.6s forwards;
+    }
+  
+    .cart-buttonN:hover {
+      transform: translateY(-5px);
+      color: #2997ff;
+      background-color: #fff;
+    }
+  
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+  
+      to {
+        opacity: 1;
+      }
+    }
+  
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+  
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  
+    footer {
+      background-color: #1d1d1f;
+      padding: 20px;
+      text-align: center;
+      font-size: 12px;
+      color: #86868b;
+    }
+  
+    .gradient1 {
+      background: linear-gradient(94deg, #0090F7, #BA62FC, #F2416B, #F55600);
+      background-clip: text;
+      color: transparent;
+      display: inline-block;
+    }
+  </style>
+
+
+
+

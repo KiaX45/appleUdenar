@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://cdn.icon-icons.com/icons2/2751/PNG/512/login_icon_176151.png" type="image/png">
+    <title>Iniciar Sesión</title>
+</head>
+
+<body>
+    {% load socialaccount %}
+    <a href="{% url 'products:home' %}" class="back-button" aria-label="Volver a la página principal">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5M12 19L5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" />
+        </svg>
+    </a>
+    <div class="decorative-element element-1"></div>
+    <div class="decorative-element element-2"></div>
+
+    <div class="container">
+        <svg class="logo" viewBox="0 0 24 24" fill="white">
+            <path
+                d="M18.71 19.5C17.88 20.74 17 21.95 15.66 21.97C14.32 22 13.89 21.18 12.37 21.18C10.84 21.18 10.37 21.95 9.09997 22C7.78997 22.05 6.79997 20.68 5.95997 19.47C4.24997 17 2.93997 12.45 4.69997 9.39C5.56997 7.87 7.12997 6.91 8.81997 6.88C10.1 6.86 11.32 7.75 12.11 7.75C12.89 7.75 14.37 6.68 15.92 6.84C16.57 6.87 18.39 7.1 19.56 8.82C19.47 8.88 17.39 10.1 17.41 12.63C17.44 15.65 20.06 16.66 20.09 16.67C20.06 16.74 19.67 18.11 18.71 19.5ZM13 3.5C13.73 2.67 14.94 2.04 15.94 2C16.07 3.17 15.6 4.35 14.9 5.19C14.21 6.04 13.07 6.7 11.95 6.61C11.8 5.46 12.36 4.26 13 3.5Z" />
+        </svg>
+
+        <h1 class="title">Bienvenido a AppleU</h1>
+        <p class="subtitle">Inicia sesión para continuar</p>
+
+        <a class="login-button" href="{% provider_login_url 'google'%}?next=/redirect_after_login"
+            onclick="redirectToGoogle()">Continuar con Google</a>
+
+        <p class="privacy-text">
+            Tu pprivacidad es importante para nosotros
+        </p>
+    </div>
+    <!--redirijimos al perfil -->
+
+
+    {% if user.is_authenticated%}
+
+    <h2>Perfil del usuario</h2>
+    <p>Nombre: {{user.first_name}}</p>
+    <p>Apellido: {{user.last_name}}</p>
+    <p>Email: {{user.email}}</p>
+    <img src="{{user.socialaccount_set.all.0.get_avatar_url}}">
+
+    <a href="logout">Logout</a>
+    {% endif %}
+
+    <div id="custom-alert" class="custom-alert">
+        <span id="custom-alert-message"></span>
+        <button id="custom-alert-close" class="custom-alert-close">&times;</button>
+    </div>
+
+    <script>
+        function redirectToGoogle() {
+            showCustomAlert('Redirigiendo a Google Inicio de sesión...');
+            // Aquí puedes agregar la lógica de redirección a Google
+        }
+
+        function showCustomAlert(message) {
+            const alertBox = document.getElementById('custom-alert');
+            const alertMessage = document.getElementById('custom-alert-message');
+            alertMessage.textContent = message;
+            alertBox.style.display = 'block';
+        }
+
+        document.getElementById('custom-alert-close').addEventListener('click', function () {
+            document.getElementById('custom-alert').style.display = 'none';
+        });
+    </script>
+
+</body>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #000000, #1a1a1a);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #ffffff;
+    }
+
+    .container {
+        text-align: center;
+        padding: 2rem;
+        max-width: 400px;
+        width: 100%;
+    }
+
+    .logo {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 2rem;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .title {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards;
+    }
+
+    .subtitle {
+        color: #888;
+        margin-bottom: 2rem;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards 0.2s;
+    }
+
+    .login-button {
+        background: rgba(255, 255, 255, 0.1);
+        text-decoration: none;
+        border: none;
+        padding: 1rem 2rem;
+        border-radius: 8px;
+        color: white;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        backdrop-filter: blur(10px);
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards 0.4s;
+    }
+
+    .login-button:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .decorative-element {
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        background: linear-gradient(45deg, #007AFF, #00C7BE);
+        filter: blur(100px);
+        opacity: 0.5;
+        z-index: -1;
+    }
+
+    .element-1 {
+        top: 20%;
+        left: 20%;
+        animation: move 8s ease-in-out infinite;
+    }
+
+    .element-2 {
+        bottom: 20%;
+        right: 20%;
+        animation: move 8s ease-in-out infinite reverse;
+    }
+
+    .custom-alert {
+        display: none;
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #007AFF;
+        /* Color de fondo */
+        color: white;
+        /* Color del texto */
+        padding: 16px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+        width: 80%;
+        max-width: 400px;
+        text-align: center;
+    }
+
+    .custom-alert-close {
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1.2rem;
+        font-weight: bold;
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        cursor: pointer;
+    }
+
+    .custom-alert-close:hover {
+        color: #ffdddd;
+    }
+
+    .back-button {
+        position: absolute;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        top: 25px;
+        left: 25px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        text-decoration: none;
+        color: #888;
+        transition: background-color 0.3s ease;
+    }
+
+    .back-button:hover {
+        color: #fff;
+    }
+
+    .back-button svg {
+        width: 24px;
+        height: 24px;
+        stroke: #333;
+    }
+
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    @keyframes fadeUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes move {
+
+        0%,
+        100% {
+            transform: translate(0, 0);
+        }
+
+        50% {
+            transform: translate(30px, 30px);
+        }
+    }
+
+    .privacy-text {
+        position: absolute;
+        bottom: 2rem;
+        font-size: 0.8rem;
+        color: #666;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeUp 0.8s ease forwards 0.6s;
+    }
+</style>
+
+</html>

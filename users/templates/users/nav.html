@@ -1,0 +1,282 @@
+<!-- <nav>
+    <li><a href="{% url 'products:home' %}">Home</a></li>
+    {% if user.is_authenticated%}
+    {% if user.is_staff %}
+    <li> <a href="{% url 'adminprofile' %}">ProfileAdmin</a> </li>
+    {% else %}
+    <li> <a href="{% url 'profile' %}">Profile</a> </li>
+    <li><a href="{% url 'products:cart' %}">Cart</a></li>
+    {% endif %}
+    <li><a href="{% url 'logout' %}">Logout</a></li>
+    {% else %}
+    <li><a href="{% url 'userLogin' %}">Login</a></li>
+    {% endif %}
+    </ul>
+</nav> -->
+
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="{% url 'products:home' %}" class="logo gradient1">AppleU</a>
+            <div class="nav-links">
+                <a href="{% url 'products:home' %}">Inicio</a>
+                {% if user.is_authenticated%}
+                <!--Ahora comprobamos is el usuario es un administrador-->
+                {% if user.is_staff%}
+                <a href="{% url 'adminprofile' %}">PerfilAdmin</a>
+                {% else %}
+                <a href="{% url 'profile' %}">Perfil</a>
+                <!-- <a href="{% url 'products:cart' %}">Carrito</a> -->
+                {% endif %}
+                <a href="{% url 'logout' %}">Cerrar Sesión</a>
+                {% else %}
+                <a href="{% url 'userLogin' %}">Iniciar Sesión</a>
+                {% endif %}
+            </div>
+            <div class="nav-icons">
+                <!-- <a href="#" aria-label="Buscar"><i class="fas fa-search"></i></a> -->
+                {% if user.is_authenticated%}
+                 {% if not user.is_staff %}
+                <a href="{% url 'products:cart' %}" aria-label="Carrito"><i class="fas fa-shopping-cart"></i></a>
+                {% endif %}
+                {% endif %}
+            </div>
+            <button class="menu-toggle" aria-label="Abrir menú"><i class="fas fa-bars"></i></button>
+        </div>
+    </nav>
+
+    <div class="mobile-menu">
+        <button class="close-menu" aria-label="Cerrar Menu"><i class="fas fa-times"></i></button>
+        <a href="{% url 'products:home' %}">Inicio</a>
+        {% if user.is_authenticated%}
+        <!--Ahora comprobamos is el usuario es un administrador-->
+        {% if user.is_staff%}
+        <a href="{% url 'adminprofile' %}">PerfilAdmin</a>
+        {% else %}
+        <a href="{% url 'profile' %}">Perfil</a>
+        <a href="{% url 'products:cart' %}">Carrito</a>
+        {% endif %}
+        <a href="{% url 'logout' %}">Cerrar Sesión</a>
+        {% else %}
+        <a href="{% url 'userLogin' %}">Iniciar Sesión</a>
+        {% endif %}
+        <!-- <a href="#" aria-label="Buscar"><i class="fas fa-search"></i></a> -->
+        {% if user.is_authenticated%}
+        {% if not user.is_staff %}
+        <a href="{% url 'products:cart' %}" aria-label="Carrito"><i class="fas fa-shopping-cart"></i></a>
+        {% endif %}
+        {% endif %}
+    </div>
+
+    <script>
+        const navbar = document.querySelector('.navbar');
+        const menuToggle = document.querySelector('.menu-toggle');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        const closeMenu = document.querySelector('.close-menu');
+
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('navbar-scrolled');
+            } else {
+                navbar.classList.remove('navbar-scrolled');
+            }
+        });
+
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.add('active');
+        });
+
+        closeMenu.addEventListener('click', () => {
+            mobileMenu.classList.remove('active');
+        });
+    </script>
+</body>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        /* me sirve para darle el background a las demas pág */
+        /* background: linear-gradient(135deg, #1a1a1a, #2c2c2c); */
+        min-width: 100vw;
+    }
+
+    .navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background-color: rgba(18, 18, 18, 0.8);
+        backdrop-filter: blur(10px);
+        transition: all 1s ease;
+        z-index: 1000;
+    }
+
+    .navbar-scrolled {
+        background-color: rgba(18, 18, 18, 0.95);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .navbar-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        width: 1200px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ffffff;
+        text-decoration: none;
+        transition: opacity 0.3s ease;
+    }
+
+    .logo:hover {
+        opacity: 0.8;
+    }
+
+    .nav-links {
+        display: flex;
+        gap: 2rem;
+    }
+
+    .nav-links a {
+        color: #b3b3b3;
+        text-decoration: none;
+        font-size: 1rem;
+        transition: color 0.5s ease;
+        position: relative;
+    }
+
+    .nav-links a::after {
+        content: '';
+        position: absolute;
+        bottom: -5px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background-color: #ffffff;
+        transform: scaleX(0);
+        transition: transform 0.3s ease;
+    }
+
+    .nav-links a:hover {
+        color: #ffffff;
+    }
+
+    .nav-links a:hover::after {
+        transform: scaleX(1);
+    }
+
+    .nav-icons {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .nav-icons a {
+        color: #b3b3b3;
+        text-decoration: none;
+        font-size: 1.2rem;
+        transition: color 0.3s ease;
+    }
+
+    .nav-icons a:hover {
+        color: #ffffff;
+    }
+
+    .menu-toggle {
+        display: none;
+        background: none;
+        border: none;
+        color: #ffffff;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+
+    .mobile-menu {
+        display: none;
+    }
+
+    @media (max-width: 768px) {
+        .nav-links {
+            display: none;
+        }
+
+        .nav-icons {
+            display: none;
+        }
+
+        .navbar-container {
+            width: 430px;
+        }
+
+        .menu-toggle {
+            display: block;
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(18, 18, 18, 0.98);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+            transform: translateX(100%);
+            transition: transform 0.8s ease;
+            z-index: 2000;
+        }
+
+        .mobile-menu.active {
+            display: flex;
+            transform: translateX(0);
+        }
+
+        .mobile-menu a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1.5rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-menu a:hover {
+            opacity: 0.8;
+            animation: colorChange 10s linear infinite;
+        }
+
+        .close-menu {
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: #ff0000;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+    }
+
+    @keyframes colorChange {
+            0%, 100% { color: #ff6b6b; }
+            20% { color: #feca57; }
+            40% { color: #48dbfb; }
+            60% { color: #ff9ff3; }
+            80% { color: #1dd1a1; }
+        }
+</style>

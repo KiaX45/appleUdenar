@@ -1,0 +1,88 @@
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<button onclick="mostrarFormulario()" class="btn btn-primary">
+    Abrir Formulario
+</button>
+
+<script>
+alredyOpen = false;
+
+function mostrarFormulario() {
+    if (alredyOpen) {
+        return;
+    }
+    alredyOpen = true;
+    Toastify({
+        node: createFormNode(),
+        duration: -1,
+        close: false,
+        gravity: "center",
+        position: "center",
+        style: {
+            background: "white",
+            color: "black",
+            minWidth: "300px",
+            padding: "2rem"
+        }
+    }).showToast();
+}
+
+function createFormNode() {
+    const div = document.createElement('div');
+    div.innerHTML = `
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="m-0">Mi Formulario</h3>
+            <button onclick="cerrarFormulario()" class="btn-close" aria-label="Close"></button>
+        </div>
+        <form id="miFormulario" onsubmit="enviarFormulario(event)">
+            {% csrf_token %}
+            {{ form.as_p|safe }}
+            <div class="d-flex gap-2 justify-content-end">
+                <button type="button" class="btn btn-warning" onclick="cerrarFormulario()">Cancelar</button>
+                <button type="submit" class="btn btn-success">Guardar</button>
+            </div>
+        </form>
+    `;
+    return div;
+}
+
+
+function cerrarFormulario() {
+    alredyOpen = false;
+    document.querySelector('.toastify').remove();
+}
+
+function enviarFormulario(e) {
+    e.preventDefault();
+    const form = document.getElementById('miFormulario');
+    const formData = new FormData(form);
+
+    // Usamos la URL actual ya que es la misma vista
+    fetch(window.location.href, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            Toastify({
+                text: "¡Formulario enviado con éxito!",
+                duration: 3000,
+                style: {
+                    background: "green",
+                }
+            }).showToast();
+            // Cerrar el formulario
+            alredyOpen = false;
+            document.querySelector('.toastify').remove();
+        }
+    });
+}
+</script>
+
+

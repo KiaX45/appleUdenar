@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario</title>
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1361/1361728.png" type="image/png">
+</head>
+
+<body>
+
+
+    {% include "users/nav.html" %}
+    <div class="nav" style="margin-bottom: 100px;"></div>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <div class="profile-image">
+                <img src="{{user.socialaccount_set.all.0.get_avatar_url}}" alt="Profile">
+            </div>
+            <div class="profile-info">
+                <h1 class="profile-name">{{user.first_name}} {{user.last_name}}</h1>
+                <p class="profile-bio"> Bienvenido usuario nuevo {{user.first_name}}{{user.last_name}}, esperamos seas
+                    un entusiasta de la
+                    tecnología y disfrutes de nuestros productos, que son creados para vivir experiencias únicas. y
+                    extraordinarias.</p>
+
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">1.2K</div>
+                <div class="stat-label">$ ahorrado</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">4</div>
+                <div class="stat-label">compras</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">132</div>
+                <div class="stat-label">Articulos vistos</div>
+            </div>
+        </div>
+
+        <div class="activity-feed">
+            <div class="activity-item">
+                <div class="activity-icon">🎨</div>
+                <div>Nuevo articulo comprado: "iPhone 16 Pro Max"</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon">💡</div>
+                <div>Compró 3 articulos esta semana</div>
+            </div>
+            <div class="activity-item">
+                <div class="activity-icon">🏆</div>
+                <div>Ganó el premio al mejor usuario del mes</div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a class="btn btn-primary" href="{% url 'logout' %}">Cerrar Sesión</a>
+            <!-- <button class="btn">Compartir Perfil</button> -->
+        </div>
+    </div>
+
+    <script>
+        // Añadir interactividad a las tarjetas de estadísticas
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseover', () => {
+                card.style.transform = 'translateY(-10px)';
+            });
+
+            card.addEventListener('mouseout', () => {
+                card.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Animación suave al hacer scroll
+        document.addEventListener('scroll', () => {
+            const elements = document.querySelectorAll('.activity-item');
+            elements.forEach(element => {
+                const rect = element.getBoundingClientRect();
+                if (rect.top < window.innerHeight) {
+                    element.style.opacity = '1';
+                    element.style.transform = 'translateY(0)';
+                }
+            });
+        });
+    </script>
+
+</body>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+        background: #000;
+        color: #fff;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+    }
+
+    .profile-container {
+        max-width: 800px;
+        width: 100%;
+        padding: 2rem;
+        background: linear-gradient(145deg, #1a1a1a 0%, #0a0a0a 100%);
+        border-radius: 20px;
+        box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+        backdrop-filter: blur(4px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-image {
+        width: 120px;
+        height: 120px;
+        border-radius: 60px;
+        background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+        position: relative;
+        overflow: hidden;
+        animation: pulseGlow 4s infinite;
+    }
+
+    .profile-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        opacity: 0.9;
+    }
+
+    .profile-info {
+        flex: 1;
+    }
+
+    .profile-name {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(90deg, #fff, #a8a8a8);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .profile-bio {
+        color: #888;
+        line-height: 1.6;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin: 2rem 0;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1.5rem;
+        border-radius: 15px;
+        text-align: center;
+        transition: transform 0.3s ease;
+        cursor: pointer;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(90deg, #4ecdc4, #ff6b6b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.05);
+        color: #fff;
+        backdrop-filter: blur(4px);
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+        text-decoration: none;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    @keyframes fadeIn {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes pulseGlow {
+        0% {
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+
+        50% {
+            box-shadow: 0 0 40px rgba(255, 107, 107, 0.5);
+        }
+
+        100% {
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.5);
+        }
+    }
+
+    .activity-feed {
+        margin-top: 2rem;
+        opacity: 0;
+        animation: fadeIn 0.8s ease-out forwards 0.3s;
+    }
+
+    .activity-item {
+        padding: 1rem;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.03);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .activity-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: scale(1.02);
+    }
+
+    .activity-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+        .profile-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .action-buttons {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+</style>
+
+</html>
