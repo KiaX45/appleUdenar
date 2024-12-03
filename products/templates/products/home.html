@@ -121,15 +121,21 @@
 
   </section>
 
-  <!-- Section de los productos -->
-  <div class="products-grid" id="products">
-    <label for="currency">Selecciona una moneda:</label>
-    <select id="currency">
+   <!-- Cambio de moneda -->
+    <section class="money-section">
+      <label for="currency">Selecciona una moneda:</label>
+      <select id="currency">
+        <option value="none" disabled selected>Seleccione la moneda</option>
         <option value="USD">Dólar (USD)</option>
         <option value="EUR">Euro (EUR)</option>
         <option value="JPY">Yen (JPY)</option>
         <option value="COP">Peso Colombiano (COP)</option>
-    </select>
+      </select>
+    </section>
+
+  <!-- Section de los productos -->
+  <div class="products-grid" id="products">
+   
   <div class="products-grid" id="products">
     {% for product in products %}
     <div class="product-card">
@@ -255,9 +261,9 @@
     </div>
   </div>
 
-  <footer>
+  <!-- <footer>
     Copyright © 2024 Udenar. Todos los derechos reservados.
-  </footer>
+  </footer> -->
 </body>
 
 </html>
@@ -626,6 +632,10 @@ priceButtons.forEach((button) => {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   }
 
+  body {
+    background-color: #000;
+  }
+
   .hero-section {
     height: 100vh;
     background: #000;
@@ -867,5 +877,43 @@ priceButtons.forEach((button) => {
     text-align: center;
     font-size: 12px;
     color: #86868b;
+    position: fixed;
+  }
+
+    .money-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      border: 1px solid #444;
+      border-radius: 10px;
+      background-color: #2c2c2e;
+      max-width: 300px;
+      margin: 0 auto;
+  }
+  
+  .money-section label {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      color: #f1b650;
+  }
+  
+  .money-section select {
+      padding: 10px;
+      font-size: 1em;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background-color: #3a3a3c;
+      color: #f5f5f7;
+      width: 100%;
+      max-width: 250px;
+  }
+
+  .money-section select:focus {
+      outline: none;
+  }
+
+  .money-section select:hover {
+    cursor: pointer;
   }
 </style>

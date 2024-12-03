@@ -12,10 +12,17 @@
       </head>
 <body>
     {% include 'users/nav.html' %}
+
+    <div class="particles" id="particles"></div>
+    <div class="success-container">
+        <div class="success-icon"></div>
+        <h1 class="success-title">¡Pago Completado!</h1>
+        <p class="success-message">Gracias por tu compra. Tu pedido ha sido procesado exitosamente.</p>
+       <a href="{% url 'products:home' %}" class="home-button">Regresar a Inicio</a>
+    </div>
+
     <div class="nav" style="margin-bottom: 100px;"></div>
-    <h1>Su pago se ha completado satisfactoriamente</h1>
   
-    <a href="{% url 'products:home' %}" class="btn btn-primary">Regresar a Inicio</a>
 
 
     <!-- Modal de carga -->
@@ -108,39 +115,182 @@
         position: 'top-right',
         close: true // Agregar botón de cerrar para notificaciones
       }).showToast()
-    }   
+    }  
+    
+     // Crear partículas decorativas
+     function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 20;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                
+                // Posición aleatoria
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                
+                // Tamaño aleatorio
+                const size = Math.random() * 8 + 4;
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+                
+                // Duración y retraso aleatorio de la animación
+                const duration = Math.random() * 2 + 2;
+                const delay = Math.random() * 2;
+                particle.style.animation = `float ${duration}s ${delay}s infinite linear`;
+                
+                container.appendChild(particle);
+            }
+        }
+
+        // Iniciar animaciones cuando la página carga
+        window.addEventListener('load', createParticles);
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
 
 <style>
     * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-  
-    body {
-      background-color: #000;
-      color: #fff;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
-  
-    .card {
-      box-shadow: 0 6px 12px rgba(172, 165, 255, 0.1);
-    }
-  
-    .products-gridtest {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 35px;
-      padding: 20px;
-      background: #000;
-      padding-top: 20px;
-    }
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .success-container {
+            text-align: center;
+            padding: 2rem;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(45deg, #00ff8c, #00a2ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 2rem;
+            position: relative;
+            animation: scaleIn 4s ease-out 4s both;
+        }
+
+        .success-icon::before {
+            content: '✓';
+            font-size: 40px;
+            color: #000;
+        }
+
+        .success-title {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            opacity: 0;
+            animation: slideUp 5s ease-out 5s forwards;
+        }
+
+        .success-message {
+            font-size: 1.1rem;
+            color: #999;
+            margin-bottom: 2rem;
+            opacity: 0;
+            animation: slideUp 5s ease-out 5s forwards;
+        }
+
+        .home-button {
+            background: linear-gradient(45deg, #00ff8c, #00a2ff);
+            color: #000;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: transform 0.7s ease, box-shadow 0.7s ease, color 0.7s ease;
+            opacity: 0;
+            animation: slideUp 0.5s ease-out 1.1s forwards;
+        }
+
+        .home-button:hover {  
+            transform: scale(1.1);
+            color: #fff;
+            box-shadow: 0 10px 20px rgba(0, 255, 140, 0.2);
+        }
+
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(45deg, #00ff8c, #00a2ff);
+            border-radius: 50%;
+            animation: float 3s infinite linear;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-1000%) rotate(360deg);
+                opacity: 0;
+            }
+        }
   
   
     /* Añadir estos estilos */
@@ -617,21 +767,6 @@
         opacity: 1;
         transform: translateY(0);
       }
-    }
-  
-    footer {
-      background-color: #1d1d1f;
-      padding: 20px;
-      text-align: center;
-      font-size: 12px;
-      color: #86868b;
-    }
-  
-    .gradient1 {
-      background: linear-gradient(94deg, #0090F7, #BA62FC, #F2416B, #F55600);
-      background-clip: text;
-      color: transparent;
-      display: inline-block;
     }
   </style>
 
