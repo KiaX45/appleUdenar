@@ -312,8 +312,7 @@ def paypal_payment(quantity, host, request):
    #create paypal dictioanry
    paypal_dict = {
          'business': settings.PAYPAL_RECEIVER_EMAIL,
-         #'amount': quantity,
-         'amount': 10, #temporalmente para pruebas
+         'amount': quantity, 
          'item_name': 'Item_Name_xyz',
          'no_shipping': 2,
          'invoice': str(uuid.uuid4()), # unique invoice id
@@ -321,8 +320,6 @@ def paypal_payment(quantity, host, request):
          'notify_url': f'http://{host}{reverse("products:paypal-ipn")}',
          "return": request.build_absolute_uri(reverse('products:payment_success')),
          "cancel_return": request.build_absolute_uri(reverse('products:cart')),
-         #'return_url': 'http://{}{}'.format(host, reverse('products:payment_success')),
-         #'cancel_return': 'http://{}{}'.format(host, reverse('products:payment_success')),
          'custom': 'Este es el campo custom',
     }
    

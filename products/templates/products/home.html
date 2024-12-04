@@ -297,19 +297,23 @@ priceButtons.forEach((button) => {
 
   currencySelect.addEventListener('change', (event) => {
     const currency = event.target.value;
+    showLoading('Cambiando moneda...');
     console.log(currency);
 
     fetch(`/product/change_currency/${currency}/`)
       .then((response) => response.json())
       .then((data) => {
         if (data.success) {
+          hideLoading();
           window.location.reload();
           mostrarNotificacion(`Moneda cambiada correctamente ha ${currency}`, 'success');
         } else {
+          hideLoading();
           alert('Ocurrió un error al cambiar la moneda');
         }
       })
       .catch((error) => {
+        hideLoading();
         console.error('Error:', error);
         alert('Ocurrió un error al cambiar la moneda');
       });
